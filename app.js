@@ -46,6 +46,8 @@ app.post("/payment", async (req, res) => {
   try {
     const resRedis = RedisStore[idempotencyKey];
     if (resRedis) {
+      if (resRedis === "loading")
+        res.status(200).send("0. Payment is already in progress");
       if (resRedis === "success") {
         res.status(200).send("1. Payment has already effected");
       } else {
@@ -55,22 +57,27 @@ app.post("/payment", async (req, res) => {
             RedisStore[idempotencyKey] = "success";
             res.status(200).send("2. Payment has been processed");
           } else {
+            RedisStore[idempotencyKey] = "failed";
             res.status(500).send("3. Payment has not been processed");
           }
         } catch (err) {
+          RedisStore[idempotencyKey] = "failed";
           res.status(500).send("4. Payment has not been processed");
         }
       }
     } else {
+      RedisStore[idempotencyKey] = "loading";
       const resPayment = await payment(amount, orderId);
       if (resPayment) {
         RedisStore[idempotencyKey] = "success";
         res.status(200).send("5. Payment has been processed");
       } else {
+        RedisStore[idempotencyKey] = "failed";
         res.status(500).send("6. Payment has not been processed");
       }
     }
   } catch (err) {
+    RedisStore[idempotencyKey] = "failed";
     res.status(500).send("7. Payment has not been processed");
   }
 });
