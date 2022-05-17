@@ -1,9 +1,20 @@
 {
+  "name": "docker-compose-test",
+  "version": "1.0.0",
+  "description": "simple hello world",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "watch": "nodemon -L app.js"
+  },
   "dependencies": {
     "axios": "^0.27.2",
     "express": "^4.18.1",
     "redis": "^4.1.0",
     "stripe": "^9.1.0",
-    "uuidv4": "^6.2.13"
+    "connect-redis": "^6.1.1",
+    "express-session": "^1.17.2",
+    "nodemon": "^2.0.15"
   }
 }
